@@ -1,73 +1,162 @@
-# React + TypeScript + Vite
+# AVE Automotive
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+AVE Automotive is a modern automotive solutions platform that specializes in:
 
-Currently, two official plugins are available:
+* 🚗 Genuine Car Parts
+* 🛢️ Lubricants & Engine Oils
+* 🔧 Vehicle Maintenance & Repair Services
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+The website provides customers with an easy way to explore products, learn about services, and connect with our automotive experts.
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Features
 
-## Expanding the ESLint configuration
+### Car Parts
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+* Genuine and high-quality automotive parts
+* Parts for multiple vehicle brands and models
+* Detailed product information
+* Easy browsing and inquiry system
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Lubricants
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+* Engine oils
+* Transmission fluids
+* Coolants
+* Brake fluids
+* Industrial lubricants
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Automotive Services
+
+* Vehicle diagnostics
+* Engine maintenance
+* Oil changes
+* Brake inspection
+* General vehicle servicing
+* Professional automotive consultation
+
+### Website Features
+
+* Responsive design for all devices
+* Modern user interface
+* Fast loading performance
+* SEO-friendly structure
+* Contact and inquiry forms
+* Product and service showcase
+
+---
+
+## Technology Stack
+
+### Frontend
+
+* React.js
+* Vite
+* Tailwind CSS
+* React Router
+* JavaScript (ES6+)
+
+### Development Tools
+
+* Node.js
+* npm
+
+---
+
+## Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/your-username/ave-automotive.git
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Navigate to the project directory:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+cd ave-automotive
 ```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+Open your browser and visit:
+
+```bash
+http://localhost:5173
+```
+
+---
+
+## Build for Production
+
+Create a production build:
+
+```bash
+npm run build
+```
+
+Preview the production build:
+
+```bash
+npm run preview
+```
+
+---
+
+## Project Structure
+
+```bash
+src/
+├── assets/
+├── components/
+├── pages/
+├── layouts/
+├── routes/
+├── hooks/
+├── data/
+├── utils/
+├── App.jsx
+└── main.jsx
+
+public/
+├── images/
+├── icons/
+└── favicon.ico
+```
+
+---
+
+## Mission
+
+Our mission is to provide reliable automotive products and professional services that ensure vehicle performance, safety, and longevity.
+
+---
+
+## Contact
+
+AVE Automotive
+
+📍 Automotive Parts, Lubricants & Vehicle Services
+
+📞 Contact: [Your Contact Number]
+
+📧 Email: [Your Email Address]
+
+🌐 Website: [Your Website URL]
+
+---
+
+## License
+
+This project is proprietary and owned by AVE Automotive. All rights reserved.
