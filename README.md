@@ -143,19 +143,6 @@ Our mission is to provide reliable automotive products and professional services
 
 ---
 
-## Contact
-
-AVE Automotive
-
-📍 Automotive Parts, Lubricants & Vehicle Services
-
-📞 Contact: [Your Contact Number]
-
-📧 Email: [Your Email Address]
-
-🌐 Website: [Your Website URL]
-
----
 
 ## License
 
