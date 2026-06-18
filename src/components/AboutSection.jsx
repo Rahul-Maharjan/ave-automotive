@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import blackCar from '../assets/black car.jpeg'
 import engineImg from '../assets/categories/engine.png'
 import tireImg from '../assets/categories/tire.png'
-import cleanerImg from '../assets/categories/cleaner.png'
-import breakImg from '../assets/categories/break.png'
 
 const stats = [
   {
@@ -147,18 +146,18 @@ export default function AboutSection() {
           </div>
 
           <div className="mt-8 flex flex-wrap gap-4">
-            <a
-              href="#categories"
+            <Link
+              to="/about"
               className="inline-flex h-14 items-center justify-center rounded-[6px] bg-[#12f215] px-7 font-['Orbitron',sans-serif] text-[0.9rem] font-bold tracking-[0.16em] text-[#08110a] transition-transform duration-200 hover:-translate-y-0.5"
             >
-              EXPLORE CATEGORIES
-            </a>
-            <a
-              href="#contact"
+              LEARN MORE
+            </Link>
+            <Link
+              to="/#contact"
               className="inline-flex h-14 items-center justify-center rounded-[6px] border border-[#e5e7eb] bg-white px-7 font-['Orbitron',sans-serif] text-[0.9rem] font-bold tracking-[0.16em] text-[#1f1f1f] transition-colors duration-200 hover:border-[#12f215] hover:text-[#12a817]"
             >
               CONTACT US
-            </a>
+            </Link>
           </div>
         </div>
 
@@ -173,7 +172,6 @@ export default function AboutSection() {
               className="min-h-12 sm:row-span-2"
               label="Brand statement"
             />
-
             <ImageTile src={engineImg} alt="Engine parts" className="min-h-6" label="Engine" />
             <ImageTile src={tireImg} alt="Tires and wheels" className="min-h-6" label="Tires" />
           </div>

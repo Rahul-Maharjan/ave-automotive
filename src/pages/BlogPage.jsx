@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import PageHeader from '../components/PageHeader.jsx'
 import blogPosts from '../data/blogPosts.js'
 
 function BlogCard({ post }) {
@@ -48,38 +49,26 @@ function BlogCard({ post }) {
   )
 }
 
-export default function BlogSection() {
+export default function BlogPage() {
   return (
-    <section id="blog" className="relative isolate overflow-hidden bg-[#060606] px-4 py-14 sm:px-6 sm:py-[4.5rem] lg:px-10 lg:py-20">
-      <div className="absolute inset-x-0 top-0 h-40 bg-[radial-gradient(circle_at_top,rgba(18,242,21,0.12),transparent_60%)] blur-3xl" />
+    <div className="min-h-screen bg-[#fafafa]">
+      <PageHeader
+        badge="Our Blog"
+        titleBefore="Insights &"
+        highlight="Guides"
+        description="Expert advice, maintenance tips, and automotive knowledge to help you make informed decisions about your vehicle."
+      />
 
-      <div className="relative mx-auto max-w-[1350px]">
-        <div className="mb-10 flex flex-col gap-4 sm:mb-12 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <p className="text-[0.8rem] font-semibold uppercase tracking-[0.35em] text-[#12f215]">
-              Blog
-            </p>
-            <h2 className="mt-4 font-['Orbitron',sans-serif] text-[clamp(1.8rem,3vw,2.8rem)] font-bold leading-tight tracking-[-0.03em] text-white">
-              Insights & Guides
-            </h2>
-            <div className="mt-3 h-1 w-20 rounded-full bg-[#12f215]" />
+      {/* ───── POSTS GRID ───── */}
+      <section className="relative overflow-hidden bg-white px-4 pb-20 pt-12 sm:px-6 lg:px-10">
+        <div className="mx-auto max-w-[1350px]">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {blogPosts.map((post) => (
+              <BlogCard key={post.id} post={post} />
+            ))}
           </div>
-
-          <Link
-            to="/blog"
-            className="inline-flex items-center gap-3 self-start text-[clamp(0.95rem,1vw,1.05rem)] font-medium tracking-[0.06em] text-[#ff8a00] transition-transform duration-200 hover:translate-x-1"
-          >
-            View All Posts
-            <span aria-hidden="true">&rarr;</span>
-          </Link>
         </div>
-
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {blogPosts.map((post) => (
-            <BlogCard key={post.id} post={post} />
-          ))}
-        </div>
-      </div>
-    </section>
+      </section>
+    </div>
   )
 }
