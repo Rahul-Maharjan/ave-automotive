@@ -33,31 +33,37 @@ const coreServices = [
 const categories = [
   {
     title: 'Tires & Wheels',
+    slug: 'tires-wheels',
     description: 'All-season, performance, and off-road tires plus rims and accessories for any vehicle type.',
     image: tireImg,
   },
   {
     title: 'Engine Parts',
+    slug: 'engine-parts',
     description: 'From filters and belts to performance components, keep your engine running at its peak.',
     image: engineImg,
   },
   {
     title: 'Accessories',
+    slug: 'accessories',
     description: 'Interior upgrades, exterior styling, and practical add-ons to personalize your ride.',
     image: seatImg,
   },
   {
     title: 'Lubricants',
+    slug: 'lubricants',
     description: 'High-performance oils, greases, and fluids engineered to protect and extend component life.',
     image: lubeImg,
   },
   {
     title: 'Car Care',
+    slug: 'car-care',
     description: 'Cleaning, detailing, and protection products to maintain your vehicle appearance and value.',
     image: cleanerImg,
   },
   {
     title: 'Brake System',
+    slug: 'brake-system',
     description: 'Pads, rotors, calipers, and complete brake kits built for safety and stopping power.',
     image: breakImg,
   },
@@ -82,7 +88,10 @@ function ServiceCard({ service }) {
 
 function CategoryCard({ category }) {
   return (
-    <div className="group relative min-h-[320px] overflow-hidden rounded-[14px] bg-[#0d0d0d] shadow-[0_8px_22px_rgba(0,0,0,0.18)] transition-transform duration-300 hover:-translate-y-1">
+    <Link
+      to={`/products/${category.slug}`}
+      className="group relative block min-h-[320px] overflow-hidden rounded-[14px] bg-[#0d0d0d] shadow-[0_8px_22px_rgba(0,0,0,0.18)] transition-transform duration-300 hover:-translate-y-1"
+    >
       <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.04),rgba(0,0,0,0.28)_55%,rgba(0,0,0,0.85))]" />
       <img
         src={category.image}
@@ -96,7 +105,7 @@ function CategoryCard({ category }) {
         </h3>
         <p className="mt-2 text-[0.9rem] leading-6 text-white/68">{category.description}</p>
       </div>
-    </div>
+    </Link>
   )
 }
 

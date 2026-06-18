@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import breakImg from '../assets/categories/break.png'
 import cleanerImg from '../assets/categories/cleaner.png'
 import engineImg from '../assets/categories/engine.png'
@@ -8,31 +9,37 @@ import tireImg from '../assets/categories/tire.png'
 const categories = [
   {
     title: 'Tires & Wheels',
+    slug: 'tires-wheels',
     subtitle: 'Explore 240+ Products',
     image: tireImg,
   },
   {
     title: 'Engine Parts',
+    slug: 'engine-parts',
     subtitle: 'Reliability & Power',
     image: engineImg,
   },
   {
     title: 'Accessories',
+    slug: 'accessories',
     subtitle: 'Personalize Your Ride',
     image: seatImg,
   },
   {
     title: 'Lubricants',
+    slug: 'lubricants',
     subtitle: 'High Performance Oils',
     image: lubeImg,
   },
   {
     title: 'Car Care',
+    slug: 'car-care',
     subtitle: 'Maintain the Shine',
     image: cleanerImg,
   },
   {
     title: 'Brake System',
+    slug: 'brake-system',
     subtitle: 'Safety First Components',
     image: breakImg,
   },
@@ -40,7 +47,9 @@ const categories = [
 
 function CategoryCard({ category }) {
   return (
-    <article className="group relative min-h-[550px] overflow-hidden rounded-[14px] bg-[#0d0d0d] shadow-[0_8px_22px_rgba(0,0,0,0.18)] transition-transform duration-300 hover:-translate-y-1">
+    <Link
+      to={`/products/${category.slug}`}
+      className="group relative block min-h-[550px] overflow-hidden rounded-[14px] bg-[#0d0d0d] shadow-[0_8px_22px_rgba(0,0,0,0.18)] transition-transform duration-300 hover:-translate-y-1">
       <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.04),rgba(0,0,0,0.28)_55%,rgba(0,0,0,0.85))]" />
       <img
         src={category.image}
@@ -57,7 +66,7 @@ function CategoryCard({ category }) {
           {category.subtitle}
         </p>
       </div>
-    </article>
+    </Link>
   )
 }
 

@@ -13,6 +13,7 @@ import BlogPage from "./pages/BlogPage.jsx";
 import SingleBlogPage from "./pages/SingleBlogPage.jsx";
 import ContactPage from "./pages/ContactPage.jsx";
 import ServicesPage from "./pages/ServicesPage.jsx";
+import ProductsPage from "./pages/ProductsPage.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx";
 
 const navItems = ["HOME", "ABOUT", "SERVICES", "BLOG", "CONTACT"];
@@ -234,6 +235,7 @@ function App() {
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/:slug" element={<SingleBlogPage />} />
           <Route path="/services" element={<ServicesPage />} />
+          <Route path="/products/:categorySlug" element={<ProductsPage />} />
           <Route path="/contact" element={<ContactPage />} />
         </Routes>
         <Footer />

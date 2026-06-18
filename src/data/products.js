@@ -1,0 +1,188 @@
+import tireImg from '../assets/categories/tire.png'
+import engineImg from '../assets/categories/engine.png'
+import seatImg from '../assets/categories/seat.png'
+import lubeImg from '../assets/categories/lube.png'
+import cleanerImg from '../assets/categories/cleaner.png'
+import breakImg from '../assets/categories/break.png'
+
+const categoryMap = {
+  'tires-wheels': { title: 'Tires & Wheels', image: tireImg },
+  'engine-parts': { title: 'Engine Parts', image: engineImg },
+  'accessories': { title: 'Accessories', image: seatImg },
+  'lubricants': { title: 'Lubricants', image: lubeImg },
+  'car-care': { title: 'Car Care', image: cleanerImg },
+  'brake-system': { title: 'Brake System', image: breakImg },
+}
+
+const products = [
+  {
+    id: 1,
+    name: 'Performance All-Season Tire 225/45R17',
+    description: 'High-performance all-season tire engineered for superior grip, reduced road noise, and long tread life across varied weather conditions.',
+    features: ['Treadwear rating 560 for extended mileage', 'Asymmetric tread pattern for confident wet/dry handling', 'Silent Block technology reduces cabin noise by 15%', 'Reinforced sidewall for improved cornering stability'],
+    image: tireImg,
+    category: 'tires-wheels',
+  },
+  {
+    id: 2,
+    name: '18-inch Lightweight Alloy Wheel Set',
+    description: 'Flow-formed alloy wheels that reduce unsprung weight while maintaining structural integrity for improved acceleration and handling.',
+    features: ['Flow-formed construction for strength-to-weight ratio', '21.5 lb per wheel — 4 lb lighter than OEM', 'Diamond-cut finish with clear coat protection', 'Fits most 5x114.3 bolt pattern vehicles'],
+    image: tireImg,
+    category: 'tires-wheels',
+  },
+  {
+    id: 3,
+    name: 'Heavy-Duty Truck/SUV Tire 265/70R17',
+    description: 'All-terrain tire built for trucks and SUVs with aggressive tread design for off-road capability without sacrificing highway comfort.',
+    features: ['Three-ply sidewall for puncture resistance', 'Stone ejector ridges prevent tread stone retention', 'Severe snow rating with 3PMSF certification', '50,000-mile treadwear warranty'],
+    image: tireImg,
+    category: 'tires-wheels',
+  },
+  {
+    id: 4,
+    name: 'High-Flow Performance Air Intake Kit',
+    description: 'Cold air intake system with large conical filter and smooth mandrel-bent tubing for increased airflow and a sporty induction sound.',
+    features: ['Gains 8–12 hp and 10 lb-ft torque', 'Washable/reusable cotton gauze filter', 'Heat shield isolates intake from engine bay heat', 'Includes all mounting hardware and silicone couplers'],
+    image: engineImg,
+    category: 'engine-parts',
+  },
+  {
+    id: 5,
+    name: 'OE-Grade Timing Belt & Water Pump Kit',
+    description: 'Complete timing belt replacement kit with water pump, tensioners, and pulleys for reliable long-term engine timing performance.',
+    features: ['Includes timing belt, water pump, tensioner, and idler pulleys', 'Kevlar-reinforced belt for high tensile strength', 'Cast aluminum water pump with sealed bearing', 'OEM-spec fitment for over 50 vehicle models'],
+    image: engineImg,
+    category: 'engine-parts',
+  },
+  {
+    id: 6,
+    name: 'Synthetic Engine Oil 5W-30 — 5 Quart',
+    description: 'Full synthetic motor oil formulated for advanced protection against wear, sludge, and thermal breakdown in modern engines.',
+    features: ['API SP/ILSAC GF-6 certified', 'Outstanding high-temp oxidation resistance', 'Protects up to 10,000 miles between changes', 'Meets dexos1 Gen 2 specifications'],
+    image: engineImg,
+    category: 'engine-parts',
+  },
+  {
+    id: 7,
+    name: 'Aluminum Hood Strut Lift Support Kit',
+    description: 'Stainless steel hood struts that replace the factory prop rod for convenient one-hand hood operation and a clean engine bay look.',
+    features: ['316 stainless steel shaft resists corrosion', 'Lifts hood up to 85% open for full bay access', 'Bolt-on installation — no drilling required', 'Lifetime limited warranty'],
+    image: seatImg,
+    category: 'accessories',
+  },
+  {
+    id: 8,
+    name: 'LED Interior Lighting Kit — RGB Smart',
+    description: 'App-controlled RGB LED interior light kit with 16 million colors, music sync, and easy adhesive installation for any vehicle.',
+    features: ['Smartphone app with custom color zones and patterns', 'Microphone music sync with adjustable sensitivity', '4 ultra-bright LED strips with 3M adhesive backing', 'Wireless remote and app dual control'],
+    image: seatImg,
+    category: 'accessories',
+  },
+  {
+    id: 9,
+    name: 'All-Weather Floor Liner Set — Custom Molded',
+    description: 'Precision-molded all-weather floor liners with raised edges and textured surface to trap mud, snow, and spills.',
+    features: ['Custom-molded to fit specific vehicle models', 'Raised edge channels contain up to 2 quarts of liquid', 'Textured non-slip surface for heel traction', 'Easy removal and cleaning with soap and water'],
+    image: seatImg,
+    category: 'accessories',
+  },
+  {
+    id: 10,
+    name: 'Premium Synthetic Engine Oil 5W-40',
+    description: 'High-performance synthetic oil engineered for European and high-performance engines requiring 5W-40 viscosity with extended drain capability.',
+    features: ['Meets ACEA A3/B4 and VW 502.00/505.00 specs', 'Exceptional shear stability at high temperatures', 'Superior turbocharger protection', 'Approved for BMW, Mercedes, VW, Audi, Porsche'],
+    image: lubeImg,
+    category: 'lubricants',
+  },
+  {
+    id: 11,
+    name: 'Heavy-Duty Diesel Motor Oil 15W-40',
+    description: 'Heavy-duty diesel engine oil formulated for on- and off-highway applications with advanced soot control and wear protection.',
+    features: ['API CK-4 and CJ-4 approved', 'Excellent acid neutralization for extended service life', 'Superior soot dispersancy for EGR engines', 'Compatible with ultra-low sulfur diesel'],
+    image: lubeImg,
+    category: 'lubricants',
+  },
+  {
+    id: 12,
+    name: 'Multi-Purpose Synthetic Grease — 14 oz',
+    description: 'Lithium-complex synthetic grease for chassis, suspension, and industrial applications requiring extreme-pressure performance.',
+    features: ['NLGI #2 grade with high dropping point (550°F)', 'Water-resistant — ideal for marine and wet environments', 'Wide service temperature range (-40°F to 400°F)', 'Contains rust and oxidation inhibitors'],
+    image: lubeImg,
+    category: 'lubricants',
+  },
+  {
+    id: 13,
+    name: 'Ceramic Car Coating Kit — 50 ml',
+    description: 'Professional-grade 9H ceramic coating that bonds to paint for years of hydrophobic protection, UV resistance, and deep gloss.',
+    features: ['9H hardness rating for scratch resistance', 'Hydrophobic contact angle above 110 degrees', 'UV stabilizers prevent paint oxidation and fading', 'Covers up to 3 standard sedans per kit'],
+    image: cleanerImg,
+    category: 'car-care',
+  },
+  {
+    id: 14,
+    name: 'Microfiber Detailing Towel Set — 12 Pack',
+    description: 'Premium 350 GSM microfiber towels in assorted colors for paint-safe washing, drying, polishing, and interior cleaning.',
+    features: ['Double-stitched edges prevent fraying and scratches', '350 GSM weight for optimal absorbency and softness', 'Lag-free pile for streak-free glass and polish removal', 'Machine washable — reusable up to 300+ washes'],
+    image: cleanerImg,
+    category: 'car-care',
+  },
+  {
+    id: 15,
+    name: 'pH-Neutral Foam Cannon Soap — 1 Gallon',
+    description: 'Concentrated pH-neutral snow foam soap designed for use with pressure washer foam cannons for safe, high-sudsing pre-wash.',
+    features: ['pH-neutral formula safe for wax and ceramic coatings', 'Creates thick, clingy foam for contactless pre-wash', 'Dilutes up to 1:40 for economical use', 'Biodegradable and phosphate-free'],
+    image: cleanerImg,
+    category: 'car-care',
+  },
+  {
+    id: 16,
+    name: 'Ceramic Brake Pads — Front Set',
+    description: 'Low-dust ceramic brake pads engineered for quiet operation, consistent stopping power, and minimal rotor wear.',
+    features: ['Ceramic compound produces 70% less dust than semi-metallic', 'Shimmed and chamfered for noise-free braking', 'Progressive friction profile for smooth pedal feel', 'Includes wear sensors and hardware clips'],
+    image: breakImg,
+    category: 'brake-system',
+  },
+  {
+    id: 17,
+    name: 'Drilled & Slotted Brake Rotors — Pair',
+    description: 'Premium vented rotors with drilled and slotted surfaces for improved heat dissipation and fade-resistant braking performance.',
+    features: ['G3000 cast iron with anti-corrosion coating', 'Drilled holes dissipate gas and heat faster', 'Slotted grooves wipe pad surface for consistent bite', 'Precision balanced for vibration-free braking'],
+    image: breakImg,
+    category: 'brake-system',
+  },
+  {
+    id: 18,
+    name: 'Performance Brake Line Kit — Stainless Steel',
+    description: 'Teflon-lined stainless steel braided brake lines that replace rubber hoses for a firmer pedal and improved braking feel.',
+    features: ['Stainless steel braided outer layer resists expansion', 'Teflon inner core eliminates moisture absorption', 'Direct bolt-in replacement — pre-assembled fittings', 'DOT-approved and TUV certified'],
+    image: breakImg,
+    category: 'brake-system',
+  },
+  {
+    id: 19,
+    name: 'High-Performance Brake Fluid — DOT 4',
+    description: 'Racing-grade DOT 4 brake fluid with high boiling point for consistent braking performance under extreme conditions.',
+    features: ['Dry boiling point of 500°F (260°C)', 'Wet boiling point of 356°F (180°C)', 'Compatible with ABS and traction control systems', 'Meets SAE J1703 and FMVSS 116 standards'],
+    image: breakImg,
+    category: 'brake-system',
+  },
+  {
+    id: 20,
+    name: 'Carbon Ceramic Brake Kit — Front & Rear',
+    description: 'Ultra-high-performance carbon ceramic brake kit for sports cars and supercars, offering exceptional stopping power and fade resistance.',
+    features: ['Carbon ceramic rotors with 6-piston calipers', 'Up to 70% lighter than traditional iron brakes', 'Extremely high thermal capacity for track use', 'Designed for OEM fitment and performance'],
+    image: breakImg,
+    category: 'brake-system',
+  },
+  {
+    id: 21,
+    name: 'Performance Brake Pads — High-Temp',
+    description: 'High-performance brake pads designed for track use and high-temperature applications, providing consistent stopping power and reduced fade.',
+    features: ['Low dust and noise levels', 'Excellent performance at high temperatures', 'Reduced brake pad wear on rotors', 'OEM-approved for compatibility'],
+    image: breakImg,
+    category: 'brake-system',
+  }
+]
+
+export { products, categoryMap }
