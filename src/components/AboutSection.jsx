@@ -3,25 +3,28 @@ import { Link } from 'react-router-dom'
 import blackCar from '../assets/black car.jpeg'
 import engineImg from '../assets/categories/engine.png'
 import tireImg from '../assets/categories/tire.png'
+import { useAbout } from '../hooks/useAbout'
+import { storageUrl } from '../lib/api'
+import { htmlToParagraphs, parseStatValue } from '../lib/content'
 
-const stats = [
-  {
-    value: 12,
-    suffix: '+',
-    label: 'Years of automotive supply experience',
-  },
-  {
-    value: 4000,
-    suffix: '+',
-    label: 'Parts and accessories sourced for customers',
-    formatter: (value) => `${Math.round(value / 100) / 10}K`,
-  },
-  {
-    value: 24,
-    suffix: '/7',
-    label: 'Support mindset for orders and inquiries',
-  },
-]
+/** Fallback content shown while the API loads (or if it fails). */
+const FALLBACK_WHO_WE_ARE = {
+  heading: 'About AVE',
+  title: 'We source automotive parts with precision, speed, and a cleaner buying experience.',
+  paragraphs: [
+    'AVE Automotives brings together performance parts, maintenance essentials, and practical accessories so customers can source what they need from one trusted place. The goal is simple: make the buying experience clear, fast, and dependable.',
+    'Founded with a passion for automotive excellence, we have grown from a small supplier into a comprehensive parts provider serving mechanics, enthusiasts, and everyday drivers alike. Our team understands vehicles inside and out, and we bring that knowledge to every interaction.',
+  ],
+  stats: [
+    { label: 'Years of automotive supply experience', value: '12+' },
+    { label: 'Parts and accessories sourced for customers', value: '4K+' },
+    { label: 'Support mindset for orders and inquiries', value: '24/7' },
+  ],
+}
+
+/** Labels for the three gallery tiles, matched to the number of images available. */
+const API_IMAGE_LABELS = ['AVE Automotives', 'Our Workshop', 'Genuine Parts']
+const FALLBACK_IMAGE_LABELS = ['Brand statement', 'Engine', 'Tires']
 
 function useCountUp(target, active, duration = 1400) {
   const [value, setValue] = useState(0)
@@ -54,14 +57,14 @@ function useCountUp(target, active, duration = 1400) {
 }
 
 function StatCard({ stat, active }) {
-  const count = useCountUp(stat.value, active)
-  const displayValue = stat.formatter ? stat.formatter(count) : Math.round(count)
+  const count = useCountUp(stat.value ?? 0, active && stat.value !== undefined)
+  const displayValue =
+    stat.value === undefined ? stat.raw : `${Math.round(count)}${stat.suffix}`
 
   return (
     <div className="rounded-[18px] border border-[#ececec] bg-white p-5 shadow-[0_10px_26px_rgba(0,0,0,0.04)]">
       <div className="font-['Orbitron',sans-serif] text-[1.65rem] font-bold tracking-[-0.03em] text-[#12a817]">
         {displayValue}
-        {stat.suffix}
       </div>
       <p className="mt-2 text-sm leading-6 text-[#6b7280]">{stat.label}</p>
     </div>
@@ -116,6 +119,30 @@ export default function AboutSection() {
     return () => observer.disconnect()
   }, [])
 
+  const { data: about } = useAbout()
+  const whoWeAre = about?.content?.who_we_are
+
+  const badge = whoWeAre?.heading?.trim() || FALLBACK_WHO_WE_ARE.heading
+  const title = whoWeAre?.title || FALLBACK_WHO_WE_ARE.title
+
+  const paragraphs = htmlToParagraphs(whoWeAre?.description)
+  const descriptionParagraphs = paragraphs.length
+    ? paragraphs
+    : FALLBACK_WHO_WE_ARE.paragraphs
+
+  const rawStats = whoWeAre?.stats?.length
+    ? whoWeAre.stats
+    : FALLBACK_WHO_WE_ARE.stats
+  const stats = rawStats.map((stat) => parseStatValue(stat.label, stat.value))
+
+  const apiImages = (whoWeAre?.images ?? [])
+    .map((image) => storageUrl(image))
+    .filter((image) => Boolean(image))
+  const imageSources = apiImages.length
+    ? [apiImages[0] || blackCar, apiImages[1] || engineImg, apiImages[2] || tireImg]
+    : [blackCar, engineImg, tireImg]
+  const imageLabels = apiImages.length ? API_IMAGE_LABELS : FALLBACK_IMAGE_LABELS
+
   return (
     <section
       id="about"
@@ -126,18 +153,23 @@ export default function AboutSection() {
       <div className="relative mx-auto grid max-w-[1350px] gap-10 lg:grid-cols-[1fr_1.02fr] lg:items-center">
         <div className="max-w-2xl">
           <p className="text-[0.8rem] font-semibold uppercase tracking-[0.35em] text-[#12a817]">
-            About AVE
+            {badge}
           </p>
 
           <h2 className="mt-4 font-['Orbitron',sans-serif] text-[clamp(1.9rem,3vw,3.35rem)] font-bold leading-[1.02] tracking-[-0.03em] text-[#1f1f1f]">
-            We source automotive parts with precision, speed, and a cleaner buying experience.
+            {title}
           </h2>
 
-          <p className="mt-5 max-w-2xl text-[1rem] leading-8 text-[#6b7280]">
-            AVE Automotives brings together performance parts, maintenance essentials, and
-            practical accessories so customers can source what they need from one trusted place.
-            The goal is simple: make the buying experience clear, fast, and dependable.
-          </p>
+          {descriptionParagraphs.map((paragraph, index) => (
+            <p
+              key={index}
+              className={`${
+                index === 0 ? 'mt-5' : 'mt-4'
+              } max-w-2xl text-[1rem] leading-8 text-[#6b7280]`}
+            >
+              {paragraph}
+            </p>
+          ))}
 
           <div ref={statsRef} className="mt-8 grid gap-4 sm:grid-cols-3">
             {stats.map((stat) => (
@@ -167,13 +199,23 @@ export default function AboutSection() {
 
           <div className="grid gap-4 sm:grid-cols-[1.15fr_0.85fr]">
             <ImageTile
-              src={blackCar}
+              src={imageSources[0]}
               alt="AVE Automotives brand vehicle"
               className="min-h-12 sm:row-span-2"
-              label="Brand statement"
+              label={imageLabels[0]}
             />
-            <ImageTile src={engineImg} alt="Engine parts" className="min-h-6" label="Engine" />
-            <ImageTile src={tireImg} alt="Tires and wheels" className="min-h-6" label="Tires" />
+            <ImageTile
+              src={imageSources[1]}
+              alt="AVE Automotives workshop"
+              className="min-h-6"
+              label={imageLabels[1]}
+            />
+            <ImageTile
+              src={imageSources[2]}
+              alt="Automotive parts and accessories"
+              className="min-h-6"
+              label={imageLabels[2]}
+            />
           </div>
         </div>
       </div>

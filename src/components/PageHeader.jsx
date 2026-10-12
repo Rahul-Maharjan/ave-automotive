@@ -43,9 +43,14 @@ export default function PageHeader({
         )}
 
         <h1 className="max-w-[800px] font-['Orbitron',sans-serif] text-[clamp(2rem,5vw,4rem)] font-extrabold leading-[0.94] tracking-[-0.02em] text-white">
-          {titleBefore}{' '}
-          <span className="text-[#12f215]">{highlight}</span>
-          {titleAfter}
+          {titleBefore}
+          {highlight ? (
+            <>
+              {titleBefore ? ' ' : null}
+              <span className="text-[#12f215]">{highlight}</span>
+            </>
+          ) : null}
+          {titleAfter ? <> {titleAfter}</> : null}
         </h1>
 
         {description && (

@@ -1,6 +1,21 @@
 import { Link } from 'react-router-dom'
 import PageHeader from '../components/PageHeader.jsx'
 import blogPosts from '../data/blogPosts.js'
+import { usePageHero } from '../hooks/usePages'
+import { useBlogs } from '../hooks/useBlogs'
+import { splitHeroTitle } from '../lib/hero'
+import { toBlogCard } from '../lib/blog'
+
+/** Fallback content shown while the API loads (or if it fails). */
+const DEFAULT_HERO = {
+  badge: 'Our Blog',
+  title: 'Insights & Guides',
+  description:
+    'Expert advice, maintenance tips, and automotive knowledge to help you make informed decisions about your vehicle.',
+}
+
+/** Phrases inside the hero title that get the green highlight treatment. */
+const HERO_HIGHLIGHTS = ['Guides', 'Insights']
 
 function BlogCard({ post }) {
   return (
@@ -50,20 +65,34 @@ function BlogCard({ post }) {
 }
 
 export default function BlogPage() {
+  const { hero } = usePageHero(['blogs', 'blog'])
+  const { data } = useBlogs()
+  const posts = data?.length
+    ? data.map(toBlogCard)
+    : blogPosts.map(toBlogCard)
+
+  const badge = hero?.heading || DEFAULT_HERO.badge
+  const title = hero?.title || DEFAULT_HERO.title
+  const description = hero?.excerpt || DEFAULT_HERO.description
+  const backgroundImage = hero?.image || undefined
+  const { before, highlight, after } = splitHeroTitle(title, HERO_HIGHLIGHTS)
+
   return (
     <div className="min-h-screen bg-[#fafafa]">
       <PageHeader
-        badge="Our Blog"
-        titleBefore="Insights &"
-        highlight="Guides"
-        description="Expert advice, maintenance tips, and automotive knowledge to help you make informed decisions about your vehicle."
+        badge={badge}
+        titleBefore={before}
+        highlight={highlight}
+        titleAfter={after}
+        description={description}
+        backgroundImage={backgroundImage}
       />
 
       {/* ───── POSTS GRID ───── */}
       <section className="relative overflow-hidden bg-white px-4 pb-20 pt-12 sm:px-6 lg:px-10">
         <div className="mx-auto max-w-[1350px]">
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {blogPosts.map((post) => (
+            {posts.map((post) => (
               <BlogCard key={post.id} post={post} />
             ))}
           </div>

@@ -6,6 +6,21 @@ import lubeImg from '../assets/categories/lube.png'
 import breakImg from '../assets/categories/break.png'
 import tireImg from '../assets/categories/tire.png'
 import seatImg from '../assets/categories/seat.png'
+import { usePageHero } from '../hooks/usePages'
+import { useServices } from '../hooks/useServices'
+import { splitHeroTitle } from '../lib/hero'
+import { htmlToParagraphs } from '../lib/content'
+
+/** Fallback content shown while the API loads (or if it fails). */
+const DEFAULT_HERO = {
+  badge: 'Our Services',
+  title: 'Premium Automotive Services & Support',
+  description:
+    'From sourcing genuine parts to expert guidance and fast delivery — we provide end-to-end support for mechanics, enthusiasts, and everyday drivers.',
+}
+
+/** Phrases inside the hero title that get the green highlight treatment. */
+const HERO_HIGHLIGHTS = ['Services']
 
 const coreServices = [
   {
@@ -29,6 +44,26 @@ const coreServices = [
     icon: breakImg,
   },
 ]
+
+/** Icons assigned to "What We Offer" items by position (the API has no icons). */
+const SERVICE_ICONS = [engineImg, cleanerImg, lubeImg, breakImg]
+
+/** Fallback headings/items for the two API-driven sections. */
+const FALLBACK_WHAT_WE_OFFER = {
+  heading: 'What We Offer',
+  title: 'Everything you need to keep your vehicle on the road.',
+}
+
+const FALLBACK_HOW_IT_WORKS = {
+  heading: 'How It Works',
+  title: 'From selection to delivery in four simple steps.',
+  items: [
+    { title: 'Browse & Select', description: 'Explore our catalog of quality parts and accessories across multiple categories.' },
+    { title: 'Get Expert Help', description: 'Not sure what fits? Our team provides fast, accurate compatibility guidance.' },
+    { title: 'Order & Pay', description: 'Secure checkout with clear pricing, no hidden fees, and order confirmation.' },
+    { title: 'Fast Delivery', description: 'We process and ship your order quickly so you can get back on the road.' },
+  ],
+}
 
 const categories = [
   {
@@ -80,7 +115,14 @@ function ServiceCard({ service }) {
         <h3 className="mt-5 font-['Orbitron',sans-serif] text-[1.15rem] font-bold tracking-[-0.03em] text-white">
           {service.title}
         </h3>
-        <p className="mt-3 text-[0.95rem] leading-7 text-white/68">{service.description}</p>
+        {service.paragraphs.map((paragraph, index) => (
+          <p
+            key={index}
+            className={`${index === 0 ? 'mt-3' : 'mt-2'} text-[0.95rem] leading-7 text-white/68`}
+          >
+            {paragraph}
+          </p>
+        ))}
       </div>
     </div>
   )
@@ -110,14 +152,47 @@ function CategoryCard({ category }) {
 }
 
 export default function ServicesPage() {
+  const { hero } = usePageHero(['services', 'service'])
+  const { data: services } = useServices()
+  const record = services?.[0]
+  const whatWeOffer = record?.what_we_offer
+  const howItWorks = record?.how_it_works
+
+  const badge = hero?.heading || DEFAULT_HERO.badge
+  const title = hero?.title || DEFAULT_HERO.title
+  const description = hero?.excerpt || DEFAULT_HERO.description
+  const backgroundImage = hero?.image || undefined
+  const { before, highlight, after } = splitHeroTitle(title, HERO_HIGHLIGHTS)
+
+  const offerHeading = whatWeOffer?.heading || FALLBACK_WHAT_WE_OFFER.heading
+  const offerTitle = whatWeOffer?.title || FALLBACK_WHAT_WE_OFFER.title
+  const offerSource = whatWeOffer?.items?.length ? whatWeOffer.items : coreServices
+  const offerItems = offerSource.map((item, index) => ({
+    title: item.title,
+    icon: item.icon ?? SERVICE_ICONS[index % SERVICE_ICONS.length],
+    paragraphs: htmlToParagraphs(item.description),
+  }))
+
+  const processHeading = howItWorks?.heading || FALLBACK_HOW_IT_WORKS.heading
+  const processTitle = howItWorks?.title || FALLBACK_HOW_IT_WORKS.title
+  const processSource = howItWorks?.items?.length
+    ? howItWorks.items
+    : FALLBACK_HOW_IT_WORKS.items
+  const processItems = processSource.map((item, index) => ({
+    step: String(index + 1).padStart(2, '0'),
+    title: item.title,
+    paragraphs: htmlToParagraphs(item.description),
+  }))
+
   return (
     <div className="min-h-screen bg-[#fafafa]">
       <PageHeader
-        badge="Our Services"
-        titleBefore="Premium Automotive"
-        highlight="Services"
-        titleAfter=" & Support"
-        description="From sourcing genuine parts to expert guidance and fast delivery — we provide end-to-end support for mechanics, enthusiasts, and everyday drivers."
+        badge={badge}
+        titleBefore={before}
+        highlight={highlight}
+        titleAfter={after}
+        description={description}
+        backgroundImage={backgroundImage}
       />
 
       {/* ───── CORE SERVICES ───── */}
@@ -128,16 +203,16 @@ export default function ServicesPage() {
         <div className="relative mx-auto max-w-[1350px]">
           <div className="mb-12 flex flex-col items-center text-center">
             <p className="text-[0.8rem] font-semibold uppercase tracking-[0.35em] text-[#12f215]">
-              What We Offer
+              {offerHeading}
             </p>
             <h2 className="mt-4 max-w-2xl font-['Orbitron',sans-serif] text-[clamp(1.8rem,3vw,2.8rem)] font-bold leading-tight tracking-[-0.03em] text-white">
-              Everything you need to keep your vehicle on the road.
+              {offerTitle}
             </h2>
             <div className="mx-auto mt-4 h-1 w-16 rounded-full bg-[#12f215]" />
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
-            {coreServices.map((service) => (
+            {offerItems.map((service) => (
               <ServiceCard key={service.title} service={service} />
             ))}
           </div>
@@ -175,21 +250,16 @@ export default function ServicesPage() {
         <div className="relative mx-auto max-w-[1350px]">
           <div className="mb-12 flex flex-col items-center text-center">
             <p className="text-[0.8rem] font-semibold uppercase tracking-[0.35em] text-[#12f215]">
-              How It Works
+              {processHeading}
             </p>
             <h2 className="mt-4 max-w-2xl font-['Orbitron',sans-serif] text-[clamp(1.8rem,3vw,2.8rem)] font-bold leading-tight tracking-[-0.03em] text-white">
-              From selection to delivery in four simple steps.
+              {processTitle}
             </h2>
             <div className="mx-auto mt-4 h-1 w-16 rounded-full bg-[#12f215]" />
           </div>
 
           <div className="grid gap-6 md:grid-cols-4">
-            {[
-              { step: '01', title: 'Browse & Select', desc: 'Explore our catalog of quality parts and accessories across multiple categories.' },
-              { step: '02', title: 'Get Expert Help', desc: 'Not sure what fits? Our team provides fast, accurate compatibility guidance.' },
-              { step: '03', title: 'Order & Pay', desc: 'Secure checkout with clear pricing, no hidden fees, and order confirmation.' },
-              { step: '04', title: 'Fast Delivery', desc: 'We process and ship your order quickly so you can get back on the road.' },
-            ].map((item) => (
+            {processItems.map((item) => (
               <div key={item.step} className="group relative overflow-hidden rounded-[18px] border border-white/8 bg-[linear-gradient(180deg,rgba(18,18,18,0.94),rgba(8,8,8,0.97))] p-7 shadow-[0_14px_36px_rgba(0,0,0,0.22)] transition-all duration-300 hover:-translate-y-1 hover:border-[#12f215]/25 hover:shadow-[0_20px_50px_rgba(0,0,0,0.34)]">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(18,242,21,0.08),transparent_34%)]" />
                 <div className="relative">
@@ -199,7 +269,14 @@ export default function ServicesPage() {
                   <h3 className="mt-4 font-['Orbitron',sans-serif] text-[1.05rem] font-bold tracking-[-0.02em] text-white">
                     {item.title}
                   </h3>
-                  <p className="mt-3 text-[0.9rem] leading-7 text-white/68">{item.desc}</p>
+                  {item.paragraphs.map((paragraph, index) => (
+                    <p
+                      key={index}
+                      className={`${index === 0 ? 'mt-3' : 'mt-2'} text-[0.9rem] leading-7 text-white/68`}
+                    >
+                      {paragraph}
+                    </p>
+                  ))}
                 </div>
               </div>
             ))}

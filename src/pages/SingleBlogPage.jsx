@@ -1,13 +1,23 @@
 import { Link, useParams, Navigate } from 'react-router-dom'
 import blogPosts from '../data/blogPosts.js'
+import { useBlog } from '../hooks/useBlogs'
+import { toBlogDetail } from '../lib/blog'
 
 export default function SingleBlogPage() {
   const { slug } = useParams()
-  const post = blogPosts.find((p) => p.slug === slug)
+  const { data, isPending } = useBlog(slug)
+  const fallback = blogPosts.find((p) => p.slug === slug)
+  const source = data ?? fallback
 
-  if (!post) {
+  if (isPending && !source) {
+    return <div className="min-h-screen bg-[#fafafa]" />
+  }
+
+  if (!source) {
     return <Navigate to="/blog" replace />
   }
+
+  const post = toBlogDetail(source)
 
   return (
     <div className="min-h-screen bg-[#fafafa]">
@@ -51,7 +61,7 @@ export default function SingleBlogPage() {
       <section className="px-4 py-14 sm:px-6 sm:py-18 lg:px-10 lg:py-24">
         <div className="mx-auto max-w-[760px]">
           <div className="space-y-6">
-            {post.content.map((paragraph, index) => (
+            {post.paragraphs.map((paragraph, index) => (
               <p key={index} className="text-[1.05rem] leading-8 text-[#4b5563]">
                 {paragraph}
               </p>

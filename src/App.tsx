@@ -15,6 +15,7 @@ import ContactPage from "./pages/ContactPage.jsx";
 import ServicesPage from "./pages/ServicesPage.jsx";
 import ProductsPage from "./pages/ProductsPage.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx";
+import { useLandingHero } from "./hooks/usePages";
 
 const navItems = ["HOME", "ABOUT", "SERVICES", "BLOG", "CONTACT"];
 
@@ -169,15 +170,50 @@ function Header() {
   );
 }
 
+const DEFAULT_HERO = {
+  heading: "Premium performance parts, lubricants, and accessories",
+  title: "Find the Right Parts for Your Vehicle",
+  excerpt:
+    "Premium performance parts, lubricants, and high-end accessories engineered for excellence.",
+};
+
+/** Split a title into two balanced lines at a word boundary. */
+function splitTitle(title: string): [string, string] {
+  const words = title.trim().split(/\s+/).filter(Boolean);
+  if (words.length < 2) return [title, ""];
+  const mid = Math.ceil(words.length / 2);
+  return [words.slice(0, mid).join(" "), words.slice(mid).join(" ")];
+}
+
+/** Render a line, highlighting the word "Parts" to match the brand styling. */
+function renderTitleLine(line: string, keyPrefix: string) {
+  return line.split(/(parts)/gi).map((piece, index) =>
+    /^parts$/i.test(piece) ? (
+      <span key={`${keyPrefix}-${index}`} className="text-[#12f215]">
+        {piece}
+      </span>
+    ) : (
+      <span key={`${keyPrefix}-${index}`}>{piece}</span>
+    ),
+  );
+}
+
 function HomePage() {
   useScrollToHash();
+  const { hero } = useLandingHero();
+
+  const heading = hero?.heading || DEFAULT_HERO.heading;
+  const title = hero?.title || DEFAULT_HERO.title;
+  const excerpt = hero?.excerpt || DEFAULT_HERO.excerpt;
+  const backgroundImage = hero?.image || blackCar;
+  const [titleLineOne, titleLineTwo] = splitTitle(title);
 
   return (
     <>
       <main
         id="home"
         className="relative isolate flex min-h-[calc(100vh-110px)] items-center overflow-hidden bg-black/10 bg-cover bg-center px-4 py-16 sm:px-6 lg:px-10"
-        style={{ backgroundImage: `url(${blackCar})` }}
+        style={{ backgroundImage: `url(${backgroundImage})` }}
       >
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.35),rgba(0,0,0,0.75))]" />
         <div className="absolute inset-0 bg-black/20" />
@@ -185,18 +221,21 @@ function HomePage() {
 
         <div className="relative z-10 mx-auto flex w-full max-w-[1100px] flex-col items-center text-center">
           <div className="mb-6 inline-flex rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.35em] text-white/55 backdrop-blur-sm">
-            Premium performance parts, lubricants, and accessories
+            {heading}
           </div>
 
           <h1 className="max-w-[1000px] font-['Orbitron',sans-serif] text-[clamp(2.35rem,6vw,5.1rem)] font-extrabold leading-[0.94] tracking-[-0.02em] text-white">
-            Find the Right <span className="text-[#12f215]">Parts</span>
-            <br className="h-0.5" />
-            for Your Vehicle
+            {renderTitleLine(titleLineOne, "title-1")}
+            {titleLineTwo ? (
+              <>
+                <br className="h-0.5" />
+                {renderTitleLine(titleLineTwo, "title-2")}
+              </>
+            ) : null}
           </h1>
 
           <p className="mt-8 max-w-[760px] text-[clamp(1rem,2vw,1.35rem)] leading-8 text-white/72">
-            Premium performance parts, lubricants, and high-end accessories
-            engineered for excellence.
+            {excerpt}
           </p>
 
           <Link
@@ -225,7 +264,7 @@ function HomePage() {
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/new">
       <div className="min-h-screen bg-[#fafafa] text-[#111827]">
         <ScrollToTop/>
         <Header />

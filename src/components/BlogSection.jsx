@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom'
 import blogPosts from '../data/blogPosts.js'
+import { useBlogs } from '../hooks/useBlogs'
+import { toBlogCard } from '../lib/blog'
 
 function BlogCard({ post }) {
   return (
@@ -49,6 +51,11 @@ function BlogCard({ post }) {
 }
 
 export default function BlogSection() {
+  const { data } = useBlogs()
+  const posts = data?.length
+    ? data.map(toBlogCard)
+    : blogPosts.map(toBlogCard)
+
   return (
     <section id="blog" className="relative isolate overflow-hidden bg-[#060606] px-4 py-14 sm:px-6 sm:py-[4.5rem] lg:px-10 lg:py-20">
       <div className="absolute inset-x-0 top-0 h-40 bg-[radial-gradient(circle_at_top,rgba(18,242,21,0.12),transparent_60%)] blur-3xl" />
@@ -75,7 +82,7 @@ export default function BlogSection() {
         </div>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {blogPosts.map((post) => (
+          {posts.map((post) => (
             <BlogCard key={post.id} post={post} />
           ))}
         </div>

@@ -1,7 +1,15 @@
 import { useState } from 'react'
+import { useSendContactMessage } from '../hooks/useContactMessages'
 
 export default function ContactSection() {
-  const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' })
+  const sendMessage = useSendContactMessage()
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    subject: '',
+    message: '',
+  })
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState('')
 
@@ -12,12 +20,33 @@ export default function ContactSection() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    const { name, email, subject, message } = form
-    if (!name.trim() || !email.trim() || !subject.trim() || !message.trim()) {
+    const { name, email, phone, subject, message } = form
+    if (
+      !name.trim() ||
+      !email.trim() ||
+      !phone.trim() ||
+      !subject.trim() ||
+      !message.trim()
+    ) {
       setError('Please fill in all fields before submitting.')
       return
     }
-    setSubmitted(true)
+
+    setError('')
+    sendMessage.mutate(
+      {
+        name: name.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
+        subject: subject.trim(),
+        message: message.trim(),
+      },
+      {
+        onSuccess: () => setSubmitted(true),
+        onError: (err) =>
+          setError(err.message || 'Something went wrong. Please try again.'),
+      },
+    )
   }
 
   return (
@@ -89,20 +118,38 @@ export default function ContactSection() {
               </div>
             </div>
 
-            <div>
-              <label htmlFor="subject" className="block text-sm font-medium text-[#374151]">
-                Subject <span className="text-red-500">*</span>
-              </label>
-              <input
-                id="subject"
-                name="subject"
-                type="text"
-                required
-                value={form.subject}
-                onChange={handleChange}
-                placeholder="What is this about?"
-                className="mt-1.5 block w-full rounded-[10px] border border-[#e5e7eb] bg-[#f9fafb] px-4 py-3 text-[15px] text-[#111827] outline-none transition-colors focus:border-[#12f215] focus:bg-white focus:ring-2 focus:ring-[#12f215]/20"
-              />
+            <div className="grid gap-5 sm:grid-cols-2">
+              <div>
+                <label htmlFor="phone" className="block text-sm font-medium text-[#374151]">
+                  Phone <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  required
+                  value={form.phone}
+                  onChange={handleChange}
+                  placeholder="+977 98XXXXXXXX"
+                  className="mt-1.5 block w-full rounded-[10px] border border-[#e5e7eb] bg-[#f9fafb] px-4 py-3 text-[15px] text-[#111827] outline-none transition-colors focus:border-[#12f215] focus:bg-white focus:ring-2 focus:ring-[#12f215]/20"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="subject" className="block text-sm font-medium text-[#374151]">
+                  Subject <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="subject"
+                  name="subject"
+                  type="text"
+                  required
+                  value={form.subject}
+                  onChange={handleChange}
+                  placeholder="What is this about?"
+                  className="mt-1.5 block w-full rounded-[10px] border border-[#e5e7eb] bg-[#f9fafb] px-4 py-3 text-[15px] text-[#111827] outline-none transition-colors focus:border-[#12f215] focus:bg-white focus:ring-2 focus:ring-[#12f215]/20"
+                />
+              </div>
             </div>
 
             <div>
@@ -129,9 +176,10 @@ export default function ContactSection() {
 
             <button
               type="submit"
-              className="inline-flex h-14 w-full items-center justify-center rounded-[6px] bg-[#12f215] px-7 font-['Orbitron',sans-serif] text-[0.9rem] font-bold tracking-[0.16em] text-[#08110a] transition-transform duration-200 hover:-translate-y-0.5"
+              disabled={sendMessage.isPending}
+              className="inline-flex h-14 w-full items-center justify-center rounded-[6px] bg-[#12f215] px-7 font-['Orbitron',sans-serif] text-[0.9rem] font-bold tracking-[0.16em] text-[#08110a] transition-transform duration-200 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
             >
-              SEND MESSAGE
+              {sendMessage.isPending ? 'SENDING...' : 'SEND MESSAGE'}
             </button>
           </form>
           )}

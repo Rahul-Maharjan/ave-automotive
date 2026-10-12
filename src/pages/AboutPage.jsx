@@ -4,6 +4,19 @@ import PageHeader from '../components/PageHeader.jsx'
 import blackCar from '../assets/black car.jpeg'
 import engineImg from '../assets/categories/engine.png'
 import tireImg from '../assets/categories/tire.png'
+import { usePageHero } from '../hooks/usePages'
+import { splitHeroTitle } from '../lib/hero'
+
+/** Fallback content shown while the API loads (or if it fails). */
+const DEFAULT_HERO = {
+  badge: 'About AVE Automotives',
+  title: 'Your Trusted Partner in Automotive Parts',
+  description:
+    'With over a decade of experience, AVE Automotives delivers quality parts, expert advice, and dependable service to keep your vehicle performing at its peak.',
+}
+
+/** Phrases inside the hero title that get the green highlight treatment. */
+const HERO_HIGHLIGHTS = ['Automotive Parts', 'Parts']
 
 const stats = [
   {
@@ -167,6 +180,13 @@ function ValueCard({ value }) {
 export default function AboutPage() {
   const statsRef = useRef(null)
   const [statsActive, setStatsActive] = useState(false)
+  const { hero } = usePageHero('about')
+
+  const badge = hero?.heading || DEFAULT_HERO.badge
+  const title = hero?.title || DEFAULT_HERO.title
+  const description = hero?.excerpt || DEFAULT_HERO.description
+  const backgroundImage = hero?.image || blackCar
+  const { before, highlight, after } = splitHeroTitle(title, HERO_HIGHLIGHTS)
 
   useEffect(() => {
     const node = statsRef.current
@@ -189,11 +209,12 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-[#fafafa]">
       <PageHeader
-        badge="About AVE Automotives"
-        titleBefore="Your Trusted Partner in"
-        highlight="Automotive Parts"
-        description="With over a decade of experience, AVE Automotives delivers quality parts, expert advice, and dependable service to keep your vehicle performing at its peak."
-        backgroundImage={blackCar}
+        badge={badge}
+        titleBefore={before}
+        highlight={highlight}
+        titleAfter={after}
+        description={description}
+        backgroundImage={backgroundImage}
       >
         <a
           href="#story"

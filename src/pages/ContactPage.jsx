@@ -1,5 +1,19 @@
 import { useState } from "react";
 import PageHeader from "../components/PageHeader.jsx";
+import { usePageHero } from "../hooks/usePages";
+import { useSendContactMessage } from "../hooks/useContactMessages";
+import { splitHeroTitle } from "../lib/hero";
+
+/** Fallback content shown while the API loads (or if it fails). */
+const DEFAULT_HERO = {
+  badge: "Get in Touch",
+  title: "Let's Start a Conversation",
+  description:
+    "Have a question about a specific part, need help with an order, or want to discuss a custom request? We are here to help.",
+};
+
+/** Phrases inside the hero title that get the green highlight treatment. */
+const HERO_HIGHLIGHTS = ["Conversation"];
 
 const contactDetails = [
   {
@@ -102,9 +116,12 @@ function ContactDetailCard({ detail }) {
 }
 
 export default function ContactPage() {
+  const { hero } = usePageHero(["contact", "contacts"]);
+  const sendMessage = useSendContactMessage();
   const [form, setForm] = useState({
     name: "",
     email: "",
+    phone: "",
     subject: "",
     message: "",
   });
@@ -118,21 +135,50 @@ export default function ContactPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const { name, email, subject, message } = form;
-    if (!name.trim() || !email.trim() || !subject.trim() || !message.trim()) {
+    const { name, email, phone, subject, message } = form;
+    if (
+      !name.trim() ||
+      !email.trim() ||
+      !phone.trim() ||
+      !subject.trim() ||
+      !message.trim()
+    ) {
       setError("Please fill in all fields before submitting.");
       return;
     }
-    setSubmitted(true);
+
+    setError("");
+    sendMessage.mutate(
+      {
+        name: name.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
+        subject: subject.trim(),
+        message: message.trim(),
+      },
+      {
+        onSuccess: () => setSubmitted(true),
+        onError: (err) =>
+          setError(err.message || "Something went wrong. Please try again."),
+      },
+    );
   };
+
+  const badge = hero?.heading || DEFAULT_HERO.badge;
+  const title = hero?.title || DEFAULT_HERO.title;
+  const description = hero?.excerpt || DEFAULT_HERO.description;
+  const backgroundImage = hero?.image || undefined;
+  const { before, highlight, after } = splitHeroTitle(title, HERO_HIGHLIGHTS);
 
   return (
     <div className="min-h-screen bg-[#fafafa]">
       <PageHeader
-        badge="Get in Touch"
-        titleBefore="Let's Start a"
-        highlight="Conversation"
-        description="Have a question about a specific part, need help with an order, or want to discuss a custom request? We are here to help."
+        badge={badge}
+        titleBefore={before}
+        highlight={highlight}
+        titleAfter={after}
+        description={description}
+        backgroundImage={backgroundImage}
       />
 
       {/* ───── FORM + DETAILS ───── */}
@@ -219,23 +265,44 @@ export default function ContactPage() {
                     </div>
                   </div>
 
-                  <div>
-                    <label
-                      htmlFor="subject"
-                      className="block text-sm font-medium text-[#374151]"
-                    >
-                      Subject <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      id="subject"
-                      name="subject"
-                      type="text"
-                      required
-                      value={form.subject}
-                      onChange={handleChange}
-                      placeholder="What is this about?"
-                      className="mt-1.5 block w-full rounded-[10px] border border-[#e5e7eb] bg-[#f9fafb] px-4 py-3 text-[15px] text-[#111827] outline-none transition-colors focus:border-[#12f215] focus:bg-white focus:ring-2 focus:ring-[#12f215]/20"
-                    />
+                  <div className="grid gap-5 sm:grid-cols-2">
+                    <div>
+                      <label
+                        htmlFor="phone"
+                        className="block text-sm font-medium text-[#374151]"
+                      >
+                        Phone <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        id="phone"
+                        name="phone"
+                        type="tel"
+                        required
+                        value={form.phone}
+                        onChange={handleChange}
+                        placeholder="+977 98XXXXXXXX"
+                        className="mt-1.5 block w-full rounded-[10px] border border-[#e5e7eb] bg-[#f9fafb] px-4 py-3 text-[15px] text-[#111827] outline-none transition-colors focus:border-[#12f215] focus:bg-white focus:ring-2 focus:ring-[#12f215]/20"
+                      />
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="subject"
+                        className="block text-sm font-medium text-[#374151]"
+                      >
+                        Subject <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        id="subject"
+                        name="subject"
+                        type="text"
+                        required
+                        value={form.subject}
+                        onChange={handleChange}
+                        placeholder="What is this about?"
+                        className="mt-1.5 block w-full rounded-[10px] border border-[#e5e7eb] bg-[#f9fafb] px-4 py-3 text-[15px] text-[#111827] outline-none transition-colors focus:border-[#12f215] focus:bg-white focus:ring-2 focus:ring-[#12f215]/20"
+                      />
+                    </div>
                   </div>
 
                   <div>
@@ -265,9 +332,10 @@ export default function ContactPage() {
 
                   <button
                     type="submit"
-                    className="inline-flex h-14 w-full items-center justify-center rounded-[6px] bg-[#12f215] px-7 font-['Orbitron',sans-serif] text-[0.9rem] font-bold tracking-[0.16em] text-[#08110a] transition-transform duration-200 hover:-translate-y-0.5 sm:w-auto sm:px-10"
+                    disabled={sendMessage.isPending}
+                    className="inline-flex h-14 w-full items-center justify-center rounded-[6px] bg-[#12f215] px-7 font-['Orbitron',sans-serif] text-[0.9rem] font-bold tracking-[0.16em] text-[#08110a] transition-transform duration-200 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto sm:px-10"
                   >
-                    SEND MESSAGE
+                    {sendMessage.isPending ? "SENDING..." : "SEND MESSAGE"}
                   </button>
                 </form>
               )}

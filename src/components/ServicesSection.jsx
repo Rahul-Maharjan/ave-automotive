@@ -3,7 +3,10 @@ import engineImg from '../assets/categories/engine.png'
 import cleanerImg from '../assets/categories/cleaner.png'
 import lubeImg from '../assets/categories/lube.png'
 import breakImg from '../assets/categories/break.png'
+import { useServices } from '../hooks/useServices'
+import { htmlToParagraphs } from '../lib/content'
 
+/** Fallback content shown while the API loads (or if it fails). */
 const services = [
   {
     title: 'Genuine Parts',
@@ -27,6 +30,9 @@ const services = [
   },
 ]
 
+/** Icons assigned to API items by position (the API has no icons). */
+const SERVICE_ICONS = [engineImg, cleanerImg, lubeImg, breakImg]
+
 function ServiceCard({ service }) {
   return (
     <article className="group relative overflow-hidden rounded-[18px] border border-white/8 bg-[linear-gradient(180deg,rgba(18,18,18,0.94),rgba(8,8,8,0.97))] p-6 shadow-[0_14px_36px_rgba(0,0,0,0.22)] transition-all duration-300 hover:-translate-y-1 hover:border-[#12f215]/25 hover:shadow-[0_20px_50px_rgba(0,0,0,0.34)]">
@@ -45,13 +51,29 @@ function ServiceCard({ service }) {
           {service.title}
         </h3>
 
-        <p className="mt-3 text-[0.98rem] leading-7 text-white/68">{service.description}</p>
+        {service.paragraphs.map((paragraph, index) => (
+          <p
+            key={index}
+            className={`${index === 0 ? 'mt-3' : 'mt-2'} text-[0.98rem] leading-7 text-white/68`}
+          >
+            {paragraph}
+          </p>
+        ))}
       </div>
     </article>
   )
 }
 
 export default function ServicesSection() {
+  const { data } = useServices()
+  const apiItems = data?.[0]?.what_we_offer?.items
+  const source = apiItems?.length ? apiItems : services
+  const items = source.map((item, index) => ({
+    title: item.title,
+    icon: item.icon ?? SERVICE_ICONS[index % SERVICE_ICONS.length],
+    paragraphs: htmlToParagraphs(item.description),
+  }))
+
   return (
     <section className="relative isolate overflow-hidden bg-[#060606] px-4 py-14 text-white sm:px-6 sm:py-[4.5rem] lg:px-10 lg:py-20">
       <div
@@ -81,7 +103,7 @@ export default function ServicesSection() {
         </div>
 
         <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-          {services.map((service) => (
+          {items.map((service) => (
             <ServiceCard key={service.title} service={service} />
           ))}
         </div>
