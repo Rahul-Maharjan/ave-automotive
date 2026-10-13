@@ -1,7 +1,17 @@
-import { Link, useParams, Navigate } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import blogPosts from '../data/blogPosts.js'
 import { useBlog } from '../hooks/useBlogs'
 import { toBlogDetail } from '../lib/blog'
+import Seo from '../components/Seo.jsx'
+import NotFoundPage from './NotFoundPage.jsx'
+import { articleSchema, breadcrumbSchema, toMetaDescription } from '../lib/seo'
+
+/** Convert a date-ish value (ISO or formatted) into an ISO string. */
+function toIso(value) {
+  if (!value) return undefined
+  const date = new Date(value)
+  return Number.isNaN(date.getTime()) ? undefined : date.toISOString()
+}
 
 export default function SingleBlogPage() {
   const { slug } = useParams()
@@ -14,13 +24,48 @@ export default function SingleBlogPage() {
   }
 
   if (!source) {
-    return <Navigate to="/blog" replace />
+    return <NotFoundPage />
   }
 
   const post = toBlogDetail(source)
+  const path = `/blog/${slug}`
+  const description =
+    toMetaDescription(source.excerpt) ||
+    toMetaDescription(post.paragraphs[0]) ||
+    post.title
+  const publishedTime = toIso(source.created_at || source.date)
+  const modifiedTime = toIso(source.updated_at) || publishedTime
 
   return (
     <div className="min-h-screen bg-[#fafafa]">
+      <Seo
+        title={post.title}
+        description={description}
+        image={post.image}
+        path={path}
+        type="article"
+        publishedTime={publishedTime}
+        modifiedTime={modifiedTime}
+        author={post.author}
+        jsonLd={[
+          articleSchema({
+            title: post.title,
+            description,
+            image: post.image,
+            path,
+            datePublished: publishedTime,
+            dateModified: modifiedTime,
+            author: post.author,
+            section: post.category,
+          }),
+          breadcrumbSchema([
+            { name: 'Home', path: '/' },
+            { name: 'Blog', path: '/blog' },
+            { name: post.title, path },
+          ]),
+        ]}
+      />
+
       {/* ───── HERO ───── */}
       <section className="relative isolate flex min-h-[60vh] items-end overflow-hidden bg-black/10 bg-cover bg-center px-4 pb-12 pt-20 sm:px-6 lg:px-10"
         style={{ backgroundImage: `url(${post.image})` }}

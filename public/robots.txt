@@ -1,0 +1,6 @@
+# AVE Automotives — crawling rules
+User-agent: *
+Allow: /
+
+# Sitemap (regenerated on every production build)
+Sitemap: https://aveautomotive.com.np/new/sitemap.xml

@@ -5,8 +5,11 @@ import engineImg from '../assets/categories/engine.png'
 import lubeImg from '../assets/categories/lube.png'
 import seatImg from '../assets/categories/seat.png'
 import tireImg from '../assets/categories/tire.png'
+import { useProductCategories } from '../hooks/useProductCategories'
+import { toCategory } from '../lib/products'
 
-const categories = [
+/** Fallback categories shown while the API loads (or if it fails). */
+const FALLBACK_CATEGORIES = [
   {
     title: 'Tires & Wheels',
     slug: 'tires-wheels',
@@ -62,15 +65,22 @@ function CategoryCard({ category }) {
         <h3 className="max-w-[11ch] font-['Orbitron',sans-serif] text-[clamp(1.55rem,2.4vw,2rem)] font-bold leading-[0.95] text-white">
           {category.title}
         </h3>
-        <p className="mt-3 font-['Orbitron',sans-serif] text-[clamp(0.9rem,1.1vw,1rem)] font-medium tracking-[0.04em] text-[#ff9900]">
-          {category.subtitle}
-        </p>
+        {category.excerpt && (
+          <p className="mt-3 line-clamp-3 font-['Orbitron',sans-serif] text-[clamp(0.9rem,1.1vw,1rem)] font-medium leading-snug tracking-[0.04em] text-[#ff9900]">
+            {category.excerpt}
+          </p>
+        )}
       </div>
     </Link>
   )
 }
 
 export default function CategorySection() {
+  const { data } = useProductCategories()
+  const categories = data?.length
+    ? data.map(toCategory)
+    : FALLBACK_CATEGORIES.map(toCategory)
+
   return (
     <section id="categories" className="bg-white px-4 py-14 sm:px-6 sm:py-[4.5rem] lg:px-10 lg:py-20">
       <div className="mx-auto max-w-[1350px]">
@@ -93,7 +103,7 @@ export default function CategorySection() {
 
         <div  className="grid gap-5 sm:gap-6 md:grid-cols-2 xl:grid-cols-3">
           {categories.map((category) => (
-            <CategoryCard key={category.title} category={category} />
+            <CategoryCard key={category.id ?? category.slug} category={category} />
           ))}
         </div>
       </div>

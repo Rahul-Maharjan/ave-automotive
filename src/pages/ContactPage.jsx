@@ -3,6 +3,8 @@ import PageHeader from "../components/PageHeader.jsx";
 import { usePageHero } from "../hooks/usePages";
 import { useSendContactMessage } from "../hooks/useContactMessages";
 import { splitHeroTitle } from "../lib/hero";
+import Seo from "../components/Seo.jsx";
+import { breadcrumbSchema, organizationSchema } from "../lib/seo";
 
 /** Fallback content shown while the API loads (or if it fails). */
 const DEFAULT_HERO = {
@@ -172,6 +174,19 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-[#fafafa]">
+      <Seo
+        title={title}
+        description={description}
+        image={backgroundImage}
+        path="/contact"
+        jsonLd={[
+          organizationSchema(),
+          breadcrumbSchema([
+            { name: 'Home', path: '/' },
+            { name: 'Contact', path: '/contact' },
+          ]),
+        ]}
+      />
       <PageHeader
         badge={badge}
         titleBefore={before}

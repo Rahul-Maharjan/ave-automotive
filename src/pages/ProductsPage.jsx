@@ -1,6 +1,18 @@
 import { useParams, Link, Navigate } from 'react-router-dom'
 import PageHeader from '../components/PageHeader.jsx'
-import { products, categoryMap } from '../data/products.js'
+import { products as fallbackProducts, categoryMap } from '../data/products.js'
+import { useProductCategories, useCategoryProducts } from '../hooks/useProductCategories'
+import { toProductCard, toCategory } from '../lib/products'
+import Seo from '../components/Seo.jsx'
+import { breadcrumbSchema, collectionPageSchema } from '../lib/seo'
+
+/** Map API category slugs to the differing local fallback slugs. */
+const LOCAL_SLUG_ALIASES = {
+  'tires-and-wheels': 'tires-wheels',
+}
+
+const DEFAULT_DESCRIPTION = (title) =>
+  `Browse our selection of ${title.toLowerCase()} — quality parts and accessories engineered for performance and reliability.`
 
 function ProductCard({ product }) {
   return (
@@ -53,21 +65,55 @@ function ProductCard({ product }) {
 
 export default function ProductsPage() {
   const { categorySlug } = useParams()
-  const category = categoryMap[categorySlug]
+  const { data: categories, isPending: categoriesPending } = useProductCategories()
+  const { data: products } = useCategoryProducts(categorySlug)
 
-  if (!category) {
+  const localSlug = LOCAL_SLUG_ALIASES[categorySlug] ?? categorySlug
+  const localCategory = categoryMap[localSlug]
+  const apiCategory = categories?.find((category) => category.slug === categorySlug)
+
+  if (!apiCategory && !localCategory && !categoriesPending) {
     return <Navigate to="/" replace />
   }
 
-  const categoryProducts = products.filter((p) => p.category === categorySlug)
+  const category = apiCategory
+    ? toCategory(apiCategory)
+    : localCategory
+      ? toCategory({ ...localCategory, slug: localSlug })
+      : undefined
+
+  if (!category) {
+    return <div className="min-h-screen bg-[#fafafa]" />
+  }
+
+  const categoryProducts = products?.length
+    ? products.map(toProductCard)
+    : fallbackProducts.filter((p) => p.category === localSlug).map(toProductCard)
+
+  const path = `/products/${categorySlug}`
+  const description =
+    category.excerpt || DEFAULT_DESCRIPTION(category.title)
 
   return (
     <div className="min-h-screen bg-[#fafafa]">
+      <Seo
+        title={category.title}
+        description={description}
+        image={category.image}
+        path={path}
+        jsonLd={[
+          collectionPageSchema({ name: category.title, description, path }),
+          breadcrumbSchema([
+            { name: 'Home', path: '/' },
+            { name: category.title, path },
+          ]),
+        ]}
+      />
       <PageHeader
         badge={category.title}
         titleBefore="Shop"
         highlight={category.title}
-        description={`Browse our selection of ${category.title.toLowerCase()} — quality parts and accessories engineered for performance and reliability.`}
+        description={description}
         backgroundImage={category.image}
       />
 

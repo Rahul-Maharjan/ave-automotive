@@ -5,6 +5,8 @@ import { usePageHero } from '../hooks/usePages'
 import { useBlogs } from '../hooks/useBlogs'
 import { splitHeroTitle } from '../lib/hero'
 import { toBlogCard } from '../lib/blog'
+import Seo from '../components/Seo.jsx'
+import { breadcrumbSchema, collectionPageSchema } from '../lib/seo'
 
 /** Fallback content shown while the API loads (or if it fails). */
 const DEFAULT_HERO = {
@@ -79,6 +81,19 @@ export default function BlogPage() {
 
   return (
     <div className="min-h-screen bg-[#fafafa]">
+      <Seo
+        title={title}
+        description={description}
+        image={backgroundImage}
+        path="/blog"
+        jsonLd={[
+          collectionPageSchema({ name: title, description, path: '/blog' }),
+          breadcrumbSchema([
+            { name: 'Home', path: '/' },
+            { name: 'Blog', path: '/blog' },
+          ]),
+        ]}
+      />
       <PageHeader
         badge={badge}
         titleBefore={before}

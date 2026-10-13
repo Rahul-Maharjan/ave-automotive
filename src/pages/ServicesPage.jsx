@@ -10,6 +10,8 @@ import { usePageHero } from '../hooks/usePages'
 import { useServices } from '../hooks/useServices'
 import { splitHeroTitle } from '../lib/hero'
 import { htmlToParagraphs } from '../lib/content'
+import Seo from '../components/Seo.jsx'
+import { breadcrumbSchema } from '../lib/seo'
 
 /** Fallback content shown while the API loads (or if it fails). */
 const DEFAULT_HERO = {
@@ -186,6 +188,16 @@ export default function ServicesPage() {
 
   return (
     <div className="min-h-screen bg-[#fafafa]">
+      <Seo
+        title={title}
+        description={description}
+        image={backgroundImage}
+        path="/services"
+        jsonLd={breadcrumbSchema([
+          { name: 'Home', path: '/' },
+          { name: 'Services', path: '/services' },
+        ])}
+      />
       <PageHeader
         badge={badge}
         titleBefore={before}

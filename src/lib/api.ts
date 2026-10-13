@@ -1,8 +1,10 @@
 /**
  * Thin API client for the AVE Automotive admin endpoints.
- * Base URL is shared across every request.
+ * Base URL is shared across every request and can be overridden per
+ * environment with `VITE_API_BASE_URL`.
  */
-export const API_BASE_URL = "https://aveautomotive.com.np/admin/api";
+export const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "https://aveautomotive.com.np/admin/api";
 
 /** A page as returned by `GET /pages` (id, name, slug). */
 export interface PageSummary {
@@ -290,6 +292,60 @@ export async function fetchBlog(
 ): Promise<BlogDetail> {
   const { data } = await request<BlogResponse>(
     `/blogs/${encodeURIComponent(slug)}`,
+    signal,
+  );
+  return data;
+}
+
+/** A product category as returned by `GET /product-categories`. */
+export interface ProductCategory {
+  id: number;
+  title: string;
+  slug: string;
+  excerpt?: string | null;
+  image?: string | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
+/** A product as returned by `GET /product-categories/{slug}`. */
+export interface Product {
+  id: number;
+  product_category_id: number;
+  title: string;
+  image?: string | null;
+  description?: string | null;
+  features?: Array<{ feature?: string | null }>;
+  created_at?: string;
+  updated_at?: string;
+}
+
+interface ProductCategoriesResponse {
+  data: ProductCategory[];
+}
+
+interface CategoryProductsResponse {
+  data: Product[];
+}
+
+/** `GET /product-categories` -> product categories. */
+export async function fetchProductCategories(
+  signal?: AbortSignal,
+): Promise<ProductCategory[]> {
+  const { data } = await request<ProductCategoriesResponse>(
+    "/product-categories",
+    signal,
+  );
+  return data;
+}
+
+/** `GET /product-categories/{slug}` -> products in a single category. */
+export async function fetchCategoryProducts(
+  slug: string,
+  signal?: AbortSignal,
+): Promise<Product[]> {
+  const { data } = await request<CategoryProductsResponse>(
+    `/product-categories/${encodeURIComponent(slug)}`,
     signal,
   );
   return data;

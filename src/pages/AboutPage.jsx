@@ -6,6 +6,8 @@ import engineImg from '../assets/categories/engine.png'
 import tireImg from '../assets/categories/tire.png'
 import { usePageHero } from '../hooks/usePages'
 import { splitHeroTitle } from '../lib/hero'
+import Seo from '../components/Seo.jsx'
+import { breadcrumbSchema } from '../lib/seo'
 
 /** Fallback content shown while the API loads (or if it fails). */
 const DEFAULT_HERO = {
@@ -208,6 +210,16 @@ export default function AboutPage() {
 
   return (
     <div className="min-h-screen bg-[#fafafa]">
+      <Seo
+        title={title}
+        description={description}
+        image={backgroundImage}
+        path="/about"
+        jsonLd={breadcrumbSchema([
+          { name: 'Home', path: '/' },
+          { name: 'About', path: '/about' },
+        ])}
+      />
       <PageHeader
         badge={badge}
         titleBefore={before}

@@ -14,8 +14,15 @@ import SingleBlogPage from "./pages/SingleBlogPage.jsx";
 import ContactPage from "./pages/ContactPage.jsx";
 import ServicesPage from "./pages/ServicesPage.jsx";
 import ProductsPage from "./pages/ProductsPage.jsx";
+import NotFoundPage from "./pages/NotFoundPage.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx";
+import Seo from "./components/Seo.jsx";
 import { useLandingHero } from "./hooks/usePages";
+import {
+  DEFAULT_TITLE,
+  organizationSchema,
+  websiteSchema,
+} from "./lib/seo";
 
 const navItems = ["HOME", "ABOUT", "SERVICES", "BLOG", "CONTACT"];
 
@@ -210,6 +217,13 @@ function HomePage() {
 
   return (
     <>
+      <Seo
+        title={DEFAULT_TITLE}
+        description={excerpt}
+        image={backgroundImage}
+        path="/"
+        jsonLd={[organizationSchema(), websiteSchema()]}
+      />
       <main
         id="home"
         className="relative isolate flex min-h-[calc(100vh-110px)] items-center overflow-hidden bg-black/10 bg-cover bg-center px-4 py-16 sm:px-6 lg:px-10"
@@ -276,6 +290,7 @@ function App() {
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/products/:categorySlug" element={<ProductsPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
         <Footer />
       </div>
