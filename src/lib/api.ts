@@ -252,6 +252,31 @@ export async function sendContactMessage(
   throw new Error(message);
 }
 
+/** Contact details returned by `GET /contacts`. */
+export interface ContactDetails {
+  id: number;
+  phone?: string[] | null;
+  email?: string[] | null;
+  address?: string | null;
+  business_hours?: string | null;
+  map_url?: string | null;
+  images?: string[];
+  created_at?: string;
+  updated_at?: string;
+}
+
+interface ContactResponse {
+  data: ContactDetails;
+}
+
+/** `GET /contacts` -> the business contact details shown across the site. */
+export async function fetchContacts(
+  signal?: AbortSignal,
+): Promise<ContactDetails> {
+  const { data } = await request<ContactResponse>("/contacts", signal);
+  return data;
+}
+
 /** A blog post as returned by `GET /blogs` (list view). */
 export interface BlogSummary {
   id: number;

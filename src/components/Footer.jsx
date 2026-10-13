@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
+import { useContacts } from "../hooks/useContacts";
+import { emailHref, phoneHref, toContactInfo } from "../lib/contacts";
 
 const quickLinks = [
   { label: "Home", to: "/" },
@@ -17,16 +19,24 @@ const services = [
   { label: "Secure Support", href: "#" },
 ];
 
-const contacts = [
-  {
-    label: "info@aveautomotive.com.np",
-    href: "mailto:info@aveautomotive.com.np",
-  },
-  { label: "+977 01 5553000", href: "tel:+977015553000" },
-  { label: "Kupondol-Lalitpur,Nepal", href: "#" },
-];
-
 export default function Footer() {
+  const { data: contact } = useContacts();
+  const info = toContactInfo(contact);
+
+  const contacts = [
+    ...info.email.map((email) => ({
+      key: `email-${email}`,
+      label: email,
+      href: emailHref(email),
+    })),
+    ...info.phone.map((phone) => ({
+      key: `phone-${phone}`,
+      label: phone,
+      href: phoneHref(phone),
+    })),
+    { key: "address", label: info.address, href: info.mapUrl },
+  ];
+
   return (
     <footer className="relative overflow-hidden border-t border-white/5 bg-[#060606] px-4 pb-6 pt-14 sm:px-6 lg:px-10 lg:pt-20">
       <div className="absolute inset-x-0 top-0 h-32 bg-[radial-gradient(circle_at_center,rgba(18,242,21,0.08),transparent_60%)] blur-3xl" />
@@ -112,9 +122,12 @@ export default function Footer() {
           </h3>
           <ul className="mt-5 space-y-4">
             {contacts.map((contact) => (
-              <li key={contact.label}>
+              <li key={contact.key}>
                 <a
                   href={contact.href}
+                  {...(contact.href.startsWith("http")
+                    ? { target: "_blank", rel: "noopener noreferrer" }
+                    : {})}
                   className="flex items-start gap-3 text-[0.95rem] text-white/50 transition-colors duration-200 hover:text-[#12f215]"
                 >
                   {contact.label}

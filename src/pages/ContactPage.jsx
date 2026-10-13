@@ -2,7 +2,14 @@ import { useState } from "react";
 import PageHeader from "../components/PageHeader.jsx";
 import { usePageHero } from "../hooks/usePages";
 import { useSendContactMessage } from "../hooks/useContactMessages";
+import { useContacts } from "../hooks/useContacts";
 import { splitHeroTitle } from "../lib/hero";
+import {
+  emailHref,
+  mapEmbedUrl,
+  phoneHref,
+  toContactInfo,
+} from "../lib/contacts";
 import Seo from "../components/Seo.jsx";
 import { breadcrumbSchema, organizationSchema } from "../lib/seo";
 
@@ -17,85 +24,123 @@ const DEFAULT_HERO = {
 /** Phrases inside the hero title that get the green highlight treatment. */
 const HERO_HIGHLIGHTS = ["Conversation"];
 
-const contactDetails = [
-  {
-    icon: (
-      <svg
-        className="h-6 w-6"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-        <circle cx="12" cy="10" r="3" />
-      </svg>
-    ),
-    label: "Visit Us",
-    value: "Kupondol-Lalitpur, Nepal",
-  },
-  {
-    icon: (
-      <svg
-        className="h-6 w-6"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-      </svg>
-    ),
-    label: "Call Us",
-    value: "+977 01 5553000",
-    href: "tel:+977015553000",
-  },
-  {
-    icon: (
-      <svg
-        className="h-6 w-6"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-        <polyline points="22,6 12,13 2,6" />
-      </svg>
-    ),
-    label: "Email Us",
-    value: "info@aveautomotive.com.np",
-    href: "mailto:info@aveautomotive.com.np",
-  },
-  {
-    icon: (
-      <svg
-        className="h-6 w-6"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <circle cx="12" cy="12" r="10" />
-        <polyline points="12 6 12 12 16 14" />
-      </svg>
-    ),
-    label: "Business Hours",
-    value: "Sun – Fri: 9:00 AM – 6:00 PM",
-  },
-];
+/** Icons for the contact detail cards, keyed by detail type. */
+const CONTACT_ICONS = {
+  address: (
+    <svg
+      className="h-6 w-6"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+      <circle cx="12" cy="10" r="3" />
+    </svg>
+  ),
+  phone: (
+    <svg
+      className="h-6 w-6"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+    </svg>
+  ),
+  email: (
+    <svg
+      className="h-6 w-6"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+      <polyline points="22,6 12,13 2,6" />
+    </svg>
+  ),
+  hours: (
+    <svg
+      className="h-6 w-6"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <polyline points="12 6 12 12 16 14" />
+    </svg>
+  ),
+};
+
+/**
+ * Build the detail cards from the contacts API payload.
+ * Multiple phone numbers / emails are supported (one card each).
+ */
+function buildContactDetails(info) {
+  const details = [
+    {
+      key: "address",
+      icon: CONTACT_ICONS.address,
+      label: "Visit Us",
+      value: info.address,
+      href: info.mapUrl,
+    },
+  ];
+
+  info.phone.forEach((phone, index) => {
+    details.push({
+      key: `phone-${index}`,
+      icon: CONTACT_ICONS.phone,
+      label: "Call Us",
+      value: phone,
+      href: phoneHref(phone),
+    });
+  });
+
+  info.email.forEach((email, index) => {
+    details.push({
+      key: `email-${index}`,
+      icon: CONTACT_ICONS.email,
+      label: "Email Us",
+      value: email,
+      href: emailHref(email),
+    });
+  });
+
+  if (info.businessHours) {
+    details.push({
+      key: "hours",
+      icon: CONTACT_ICONS.hours,
+      label: "Business Hours",
+      value: info.businessHours,
+    });
+  }
+
+  return details;
+}
 
 function ContactDetailCard({ detail }) {
   const Tag = detail.href ? "a" : "div";
-  const extraProps = detail.href ? { href: detail.href } : {};
+  const isExternal = detail.href?.startsWith("http");
+  const extraProps = detail.href
+    ? {
+        href: detail.href,
+        ...(isExternal
+          ? { target: "_blank", rel: "noopener noreferrer" }
+          : {}),
+      }
+    : {};
 
   return (
     <Tag
@@ -119,6 +164,9 @@ function ContactDetailCard({ detail }) {
 
 export default function ContactPage() {
   const { hero } = usePageHero(["contact", "contacts"]);
+  const { data: contact } = useContacts();
+  const contactInfo = toContactInfo(contact);
+  const contactDetails = buildContactDetails(contactInfo);
   const sendMessage = useSendContactMessage();
   const [form, setForm] = useState({
     name: "",
@@ -367,7 +415,7 @@ export default function ContactPage() {
 
               <div className="mt-8 space-y-4">
                 {contactDetails.map((detail) => (
-                  <ContactDetailCard key={detail.label} detail={detail} />
+                  <ContactDetailCard key={detail.key} detail={detail} />
                 ))}
               </div>
             </div>
@@ -381,13 +429,25 @@ export default function ContactPage() {
           <div className="overflow-hidden rounded-[18px] border border-white/8 shadow-[0_14px_36px_rgba(0,0,0,0.22)]">
             <iframe
               title="AVE Automotives location"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3532.979158870078!2d85.30880874166583!3d27.68703901501477!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39eb19b4ad7096dd%3A0x29fa3d73b99dcc97!2sKupondole%2C%20Lalitpur%2044600!5e0!3m2!1sen!2snp!4v1781237235303!5m2!1sen!2snp"
+              src={mapEmbedUrl(contactInfo.mapUrl)}
               width="100%"
               height="450"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               style={{ border: 0, display: "block" }}
             />
+          </div>
+
+          <div className="mt-6 flex flex-col items-center gap-3 text-center sm:flex-row sm:justify-between sm:text-left">
+            <p className="text-[0.95rem] text-white/55">{contactInfo.address}</p>
+            <a
+              href={contactInfo.mapUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-12 items-center justify-center rounded-[6px] border border-[#12f215]/40 bg-[#12f215]/10 px-6 font-['Orbitron',sans-serif] text-[0.8rem] font-bold tracking-[0.16em] text-[#12f215] transition-colors duration-200 hover:bg-[#12f215] hover:text-[#08110a]"
+            >
+              GET DIRECTIONS
+            </a>
           </div>
         </div>
       </section>

@@ -1,8 +1,12 @@
 import { useState } from 'react'
 import { useSendContactMessage } from '../hooks/useContactMessages'
+import { useContacts } from '../hooks/useContacts'
+import { mapEmbedUrl, toContactInfo } from '../lib/contacts'
 
 export default function ContactSection() {
   const sendMessage = useSendContactMessage()
+  const { data: contact } = useContacts()
+  const contactInfo = toContactInfo(contact)
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -187,7 +191,7 @@ export default function ContactSection() {
           <div className="overflow-hidden rounded-[18px] border border-[#ececec] shadow-[0_10px_26px_rgba(0,0,0,0.04)]">
             <iframe
               title="AVE Automotives location"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3532.979158870078!2d85.30880874166583!3d27.68703901501477!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39eb19b4ad7096dd%3A0x29fa3d73b99dcc97!2sKupondole%2C%20Lalitpur%2044600!5e0!3m2!1sen!2snp!4v1781237235303!5m2!1sen!2snp"
+              src={mapEmbedUrl(contactInfo.mapUrl)}
               width="100%"
               height="100%"
               loading="lazy"
