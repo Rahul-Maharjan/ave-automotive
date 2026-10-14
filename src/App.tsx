@@ -278,7 +278,7 @@ function HomePage() {
 
 function App() {
   return (
-    <BrowserRouter basename="/new">
+    <BrowserRouter>
       <div className="min-h-screen bg-[#fafafa] text-[#111827]">
         <ScrollToTop/>
         <Header />
